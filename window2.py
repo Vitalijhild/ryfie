@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTime, QTimer
 from PyQt5.QtWidgets import QLineEdit, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout
 from instr import *
 from PyQt5.QtGui import QFont
@@ -10,10 +10,12 @@ class Win2(QWidget):
         self.initUI()
         self.connects()
         self.show()
+
     def set_appear(self):
         self.setWindowTitle(txt_title)
         self.resize(win_width, win_height)
         self.move(win_x, win_y)
+
     def initUI(self):
         self.lb_name = QLabel(txt_name)
         self.le_name = QLineEdit(txt_hintname)
@@ -26,7 +28,7 @@ class Win2(QWidget):
         self.le_test1 = QLineEdit(txt_hinttest1)
 
         self.lb_test2 = QLabel(txt_test2)
-        self.dtn_test2 = QPushButton(txt_starttest1)
+        self.btn_test2 = QPushButton(txt_starttest2)
         
         self.lb_test3 = QLabel(txt_test3)
         self.btn_test3 = QPushButton(txt_starttest3)
@@ -53,7 +55,9 @@ class Win2(QWidget):
         self.v_live_l.addWidget(self.btn_test1, alignment=Qt.AlignLeft)
         self.v_live_l.addWidget(self.le_test1, alignment=Qt.AlignLeft)
         self.v_live_l.addWidget(self.lb_test2, alignment=Qt.AlignLeft)
-        self.v_live_l.addWidget(self.btn_test3, alignment=Qt.AlignLeft)
+        self.v_live_l.addWidget(self.btn_test2, alignment=Qt.AlignLeft)
+        self.v_live_l.addWidget(self.lb_test3, alignment=Qt.AlignLeft)
+        self.v_live_l.addWidget(self.btn_test3, alignment=Qt.AlignLeft)        
         self.v_live_l.addWidget(self.le_test2, alignment=Qt.AlignLeft)
         self.v_live_l.addWidget(self.le_test3, alignment=Qt.AlignLeft)
         self.v_live_l.addWidget(self.btn_next, alignment=Qt.AlignCenter)
@@ -63,5 +67,54 @@ class Win2(QWidget):
         self.h_live.addLayout(self.v_live_r)       
         self.setLayout(self.h_live)
 
-    def connects(self):
-        pass
+    def connects(self):        
+        self.btn_test1.clicked.connect(self.start_test1)
+        self.btn_test2.clicked.connect(self.start_test2)
+        self.btn_test3.clicked.connect(self.start_test3)
+    
+    def start_test1(self):
+        self.time = QTime(0, 0, 15)
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.timer1_event)
+        self.timer.start(1000)
+    
+    def timer1_event(self):
+        self.time = self.time.addSecs(-1)
+        self.lb_timer.setText(self.time.toString('hh:mm:ss'))
+        self.lb_timer.setFont(QFont('Times', 36, QFont.Bold))
+        self.lb_timer.setStyleSheet('color: rgb(0, 0, 0);')
+        if self.time.toString('hh:mm:ss') == '00:00:00':
+            self.timer.stop()
+
+    def start_test2(self):
+        self.time = QTime(0, 0, 30)
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.timer2_event)
+        self.timer.start(1500)
+    
+    def timer2_event(self):
+        self.time = self.time.addSecs(-1)
+        self.lb_timer.setText(self.time.toString('hh:mm:ss')[6:8])
+        self.lb_timer.setFont(QFont('Times', 36, QFont.Bold))
+        self.lb_timer.setStyleSheet('color: rgb(0, 0, 0);')
+        if self.time.toString('hh:mm:ss') == '00:00:00':
+            self.time.stop()
+    def start_test3(self):
+        self.time = QTime(0, 1, 0)
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.timer3_event)
+        self.timer.start(1000)
+
+    def timer3_event(self):
+        self.time = self.time.addSecs(-1)
+        self.lb_timer.setText(self.time.toString('hh:mm:ss'))
+        self.lb_timer.setFont(QFont('Times', 36, QFont.Bold))
+        if int(self.time.toString('hh:mm:ss')[6:8]) >= 45:
+            self.lb_timer.setStyleSheet('color: rgb(0, 255, 0)')
+        elif int(self.time.toString('hh:mm:ss')[6:8]) <= 15:
+            self.lb_timer.setStyleSheet('color: rgb(0, 255, 0)')
+        else:
+            self.lb_timer.setStyleSheet('color: rgb(0, 0, 0)')
+        if self.time.toString('hh:mm:ss') == '00:00:00':
+            self.time.stop()
+        
